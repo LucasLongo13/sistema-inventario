@@ -1,15 +1,15 @@
 <script lang="ts">
-    let { categoryModel } = $props();
+    let { providerModel } = $props();
     let id = $props.id();
 </script>
 
-{#if categoryModel.createDialog}
+{#if providerModel.createDialog}
     <div
         class="w-full text-black h-full fixed top-0 left-0 flex flex-col items-center bg-transparent justify-center backdrop-blur-xl"
     >
         <div class="bg-white rounded-md p-4 w-96">
-            <form onsubmit={(e) => categoryModel.createCategory(e)}>
-                <h2 class="text-lg font-bold">Crear Categoria</h2>
+            <form onsubmit={(e) => providerModel.createProvider(e)}>
+                <h2 class="text-lg font-bold">Crear Proveedor</h2>
                 <hr />
 
                 <div class="p-2 flex flex-col">
@@ -28,7 +28,7 @@
                 <div class="p-2 flex justify-end gap-2 mt-3">
                     <button
                         class="bg-red-400 text-white px-4 py-2 rounded-md"
-                        onclick={() => (categoryModel.createDialog = false)}
+                        onclick={() => (providerModel.createDialog = false)}
                     >
                         Cancelar
                     </button>

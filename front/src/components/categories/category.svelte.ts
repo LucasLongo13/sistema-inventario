@@ -1,6 +1,6 @@
 import { http } from "@core/http"
 
-interface Category {
+export interface Category {
     id: number
     name: string
 }

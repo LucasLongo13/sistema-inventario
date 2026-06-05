@@ -1,8 +1,8 @@
-import { IsString, Length } from "class-validator";
+import { IsEnum } from "class-validator";
+import { MovementType } from "@prisma/client";
 
 export class CreateCategoryDto {
 
-    @IsString()
-    @Length(3, 50, { message: 'El nombre debe tener entre 3 y 50 caracteres' })
-    name!: string;
+    @IsEnum (MovementType, {message: 'movementType must be either "IN" or "OUT"'})
+    type: MovementType;
 }

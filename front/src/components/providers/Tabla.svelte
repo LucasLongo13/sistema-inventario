@@ -2,21 +2,21 @@
     import Delete from "./Delete.svelte";
     import Edit from "./Edit.svelte";
     import Create from "./Create.svelte";
-    import { categoryModel } from "./category.svelte";
+    import { providerModel } from "./provider.svelte";
     import { onMount } from "svelte";
 
     onMount(async () => {
-        await categoryModel.getCategories();
+        await providerModel.getProviders();
     });
 </script>
 
-<Delete {categoryModel} />
-<Edit {categoryModel} />
-<Create {categoryModel} />
+<Delete {providerModel} />
+<Edit {providerModel} />
+<Create {providerModel} />
 
 <div class="w-full flex justify-end mb-4">
-    <button class="bg-gray-800 text-xl text-white px-2 py-1 rounded-md border border-white" onclick={() => categoryModel.showCreateModal()}>
-        Nueva Categoría
+    <button class="bg-gray-800 text-xl text-white px-2 py-1 rounded-md border border-white" onclick={() => providerModel.showCreateModal()}>
+        Nuevo Proveedor
     </button>
 </div>
 
@@ -28,20 +28,20 @@
         </tr>
     </thead>
     <tbody>
-        {#each categoryModel.categories as category}
+        {#each providerModel.providers as provider}
             <tr class="odd:bg-gray-100 dark:odd:bg-gray-700">
-                <td class="px-2 py-1">{category.name}</td>
+                <td class="px-2 py-1">{provider.name}</td>
                 <td class="px-2 py-1">
                     <div class="flex justify-center gap-2">
                         <button
-                            onclick={() => categoryModel.showEditModal(category)}
+                            onclick={() => providerModel.showEditModal(provider)}
                             aria-label="Editar"
                             class="bg-gray-800 text-white px-4 rounded-md"
                         >
                             Editar
                         </button>
                         <button
-                            onclick={() => categoryModel.showDeleteModal(category)}
+                            onclick={() => providerModel.showDeleteModal(provider)}
                             aria-label="Eliminar"
                             class="bg-red-500 text-white px-4 rounded-md"
                         >
