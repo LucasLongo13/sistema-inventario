@@ -38,7 +38,7 @@ class MovementModel {
         const formData = new FormData(e.target as HTMLFormElement);
         const data = Object.fromEntries(formData);
 
-        await http.patch<Category>(`${import.meta.env.PUBLIC_API_URL}/movements/${id}`, data);
+        await http.patch<Movement>(`${import.meta.env.PUBLIC_API_URL}/movements/${id}`, data);
         this.getMovements();
         this.editDialog = false;
     }

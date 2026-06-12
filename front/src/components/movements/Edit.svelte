@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { productModel } from "@components/products/product.svelte";
+    import { productModel } from "../products/products.svelte";
     import { userModel } from "@components/users/user.svelte";
     import { onMount } from "svelte";
 
@@ -45,8 +45,8 @@
                             name="type"
                             value={movementModel.movement.type}
                         >
-                            <option value="income">Ingreso</option>
-                            <option value="expense">Egreso</option>
+                            <option value="INGRESO">Ingreso</option>
+                            <option value="EGRESO">Egreso</option>
                         </select>
                     </div>
                     <div class="p-2 flex flex-col">

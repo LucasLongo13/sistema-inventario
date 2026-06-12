@@ -9,10 +9,11 @@ export class CategoriesService {
   
     async create(createCategoryDto: CreateCategoryDto) {
       try {
-        // Validar el correo electrónico
+        const name = (createCategoryDto as any).name ?? (createCategoryDto as any).nombre;
+
         const existingCategory = await this.prismaService.category.findFirst({
           where: {
-            name: createCategoryDto.name,
+            name,
           }
         });
   
@@ -20,8 +21,14 @@ export class CategoriesService {
           throw new ConflictException('El categoría con ese nombre ya está en uso');
         }
   
+        const data = { ...(createCategoryDto as any) };
+        if (data.nombre !== undefined) {
+          data.name = data.nombre;
+          delete data.nombre;
+        }
+
         return await this.prismaService.category.create({
-          data: createCategoryDto
+          data,
         })
       } catch (error) {
         console.log(error);
@@ -63,10 +70,12 @@ export class CategoriesService {
           throw new NotFoundException('Categoría no encontrada');
         }
   
-        // Validar el correo electrónico
+        // Normalizar nombre (soporta 'name' o 'nombre')
+        const name = (updateCategoryDto as any).name ?? (updateCategoryDto as any).nombre;
+
         const existingCategory = await this.prismaService.category.findFirst({
           where: {
-            name: updateCategoryDto.name,
+            name,
           }
         });
   
@@ -74,13 +83,17 @@ export class CategoriesService {
           throw new ConflictException('El nombre de la categoría ya está en uso');
         }
   
+        const data = { ...(updateCategoryDto as any) };
+        if (data.nombre !== undefined) {
+          data.name = data.nombre;
+          delete data.nombre;
+        }
+
         return await this.prismaService.category.update({
           where: {
             id,
           },
-          data: {
-            ...updateCategoryDto,
-          }
+          data,
         })
       } catch (error) {
         console.log(error);

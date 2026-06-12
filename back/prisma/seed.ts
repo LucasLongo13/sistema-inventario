@@ -17,23 +17,20 @@ async function main()
         },
     }
 );
-if (adminExists) 
-{
-    console.log('User with email ${process.env.ADMIN_EMAIL?.toLowerCase()} already exists');
+if (adminExists) {
+    console.log(`User with email ${process.env.ADMIN_EMAIL?.toLowerCase()} already exists`);
     return;
+} else {
+    await prisma.user.create({
+        data: {
+            fullName: process.env.ADMIN_FULLNAME?.toLowerCase()!,
+            email: process.env.ADMIN_EMAIL?.toLowerCase()!,
+            password: hashSync(process.env.ADMIN_PASSWORD!, 10),
+            role: Role.ADMIN,
+        },
+    });
+    console.log(`User with email ${process.env.ADMIN_EMAIL?.toLowerCase()} created`);
 }
-    else 
-    {
-        await prisma.user.create({
-            data: {
-                fullName: process.env.ADMIN_FULLNAME?.toLowerCase()!,
-                email: process.env.ADMIN_EMAIL?.toLowerCase()!,
-                password: hashSync(process.env.ADMIN_PASSWORD!, 10),
-                role: Role.ADMIN,
-            },
-        })
-        console.log('User with email ${process.env.ADMIN_EMAIL?.toLowerCase()} created');
-    };
 }
      main()
      .then(async () => {

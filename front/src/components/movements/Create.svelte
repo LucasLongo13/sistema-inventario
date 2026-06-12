@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { productModel } from "@components/products/product.svelte";
-    import { userModel } from "@components/users/user.svelte";
+    import { productModel } from "../products/products.svelte";
+    import { userModel } from "../users/user.svelte";
     import { onMount } from "svelte";
 
     let { movementModel } = $props();
@@ -43,8 +43,8 @@
                             id={`type-${id}`}
                             name="type"
                         >
-                            <option value="income">Ingreso</option>
-                            <option value="expense">Egreso</option>
+                            <option value="INGRESO">Ingreso</option>
+                            <option value="EGRESO">Egreso</option>
                         </select>
                     </div>
                     <div class="p-2 flex flex-col">
