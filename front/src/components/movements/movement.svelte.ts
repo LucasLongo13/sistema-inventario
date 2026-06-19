@@ -2,9 +2,14 @@ import type { Category } from "@components/categories/category.svelte"
 import { http } from "@core/http"
 
 export enum MovementType {
-    IN = "INGRESO",
-    OUT = "EGRESO",
+    IN = "IN",
+    OUT = "OUT",
 }
+
+export const MovementTypeOptions = [
+    { label: "Ingreso", value: MovementType.IN },
+    { label: "Egreso", value: MovementType.OUT },
+]
 
 export interface Movement {
     id: number
@@ -38,7 +43,7 @@ class MovementModel {
         const formData = new FormData(e.target as HTMLFormElement);
         const data = Object.fromEntries(formData);
 
-        await http.patch<Movement>(`${import.meta.env.PUBLIC_API_URL}/movements/${id}`, data);
+        await http.patch<Category>(`${import.meta.env.PUBLIC_API_URL}/movements/${id}`, data);
         this.getMovements();
         this.editDialog = false;
     }
@@ -77,6 +82,15 @@ class MovementModel {
     formatDate(date: string) {
         const dateObj = new Date(date);
         return new Intl.DateTimeFormat('es-AR', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+        }).format(dateObj);
+    }
+
+    formatDateToInput(date: string) {
+        const dateObj = new Date(date);
+        return new Intl.DateTimeFormat('en-CA', {
             year: 'numeric',
             month: '2-digit',
             day: '2-digit',

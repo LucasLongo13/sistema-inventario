@@ -1,4 +1,6 @@
 import { http } from "@core/http"
+import { handleError } from "@core/utils/handle-error"
+import { handleErrorToast } from "@core/utils/toast"
 
 interface User {
     id: number
@@ -12,6 +14,7 @@ class UserModel {
     deleteDialog = $state(false);
     editDialog = $state(false);
     createDialog = $state(false);
+    errorMessage = $state('');
 
     async getUsers() {
         this.users = await http.get<User[]>(`${import.meta.env.PUBLIC_API_URL}/users`);
@@ -23,40 +26,28 @@ class UserModel {
         this.deleteDialog = false;
     }
 
-async editUser(id: number, e: Event) {
-    e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
+    async editUser(id: number, e: Event) {
+        e.preventDefault();
+        const formData = new FormData(e.target as HTMLFormElement);
+        const data = Object.fromEntries(formData);
 
-    const data = {
-        fullName: String(formData.get("fullName")),
-        email: String(formData.get("email")),
-        password: String(formData.get("password"))
-    };
+        await http.patch<User>(`${import.meta.env.PUBLIC_API_URL}/users/${id}`, data);
+        this.getUsers();
+        this.editDialog = false;
+    }
 
-    await http.patch<User>(`${import.meta.env.PUBLIC_API_URL}/users/${id}`, data);
-    this.getUsers();
-    this.editDialog = false;
-}
-
-
-
-async createUser(e: SubmitEvent) {
-    const form = e.target as HTMLFormElement;
-    const formData = new FormData(form);
-
-    const data = {
-        fullName: String(formData.get("fullName") ?? ""),
-        email: String(formData.get("email") ?? ""),
-        password: String(formData.get("password") ?? "")
-    };
-
-    console.log("ENVIANDO USER", data);
-
-    await http.post<User>(`${import.meta.env.PUBLIC_API_URL}/users`, data);
-    await this.getUsers();
-    this.createDialog = false;
-}
-
+    async createUser(e: Event) {
+        try {
+            e.preventDefault();
+            const formData = new FormData(e.target as HTMLFormElement);
+            const data = Object.fromEntries(formData);
+            await http.post<User>(`${import.meta.env.PUBLIC_API_URL}/users`, data);
+            this.getUsers();
+            this.createDialog = false;
+        } catch (error) {
+            handleErrorToast(error);
+        }
+    }
 
     showCreateModal() {
         this.user = null;

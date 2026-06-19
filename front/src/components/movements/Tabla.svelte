@@ -2,11 +2,15 @@
     import Delete from "./Delete.svelte";
     import Edit from "./Edit.svelte";
     import Create from "./Create.svelte";
-    import { movementModel, MovementType } from "./movement.svelte";
+    import { movementModel, MovementType, MovementTypeOptions } from "./movement.svelte";
     import { onMount } from "svelte";
+    import { userModel } from "@components/users/user.svelte";
+    import { categoryModel } from "@components/categories/category.svelte";
 
     onMount(async () => {
         await movementModel.getMovements();
+        await userModel.getUsers();
+        await categoryModel.getCategories();
     });
 </script>
 
@@ -36,7 +40,7 @@
             <tr class="odd:bg-gray-100 dark:odd:bg-gray-700">
                 <td class="px-2 py-1">#{movement.id}</td>
                 <td class="px-2 py-1">{movementModel.formatDate(movement.date)}</td>
-                <td class="px-2 py-1">{movement.type === MovementType.IN ? "Ingreso" : "Egreso"}</td>
+                <td class="px-2 py-1">{MovementTypeOptions.find(option => option.value === movement.type)?.label}</td>
                 <td class="px-2 py-1">{movement.amount}</td>
                 <td class="px-2 py-1">{movementModel.formatPriceUnit(movement.priceUnit)}</td>
                 <td class="px-2 py-1 text-right">

@@ -2,6 +2,7 @@ import { ConflictException, Injectable, NotFoundException } from '@nestjs/common
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { PrismaService } from '../prisma/prisma.service';
+import { PaginationDto } from '../common/dtos/pagination.dto';
 
 @Injectable()
 export class CategoriesService {
@@ -9,11 +10,10 @@ export class CategoriesService {
   
     async create(createCategoryDto: CreateCategoryDto) {
       try {
-        const name = (createCategoryDto as any).name ?? (createCategoryDto as any).nombre;
-
+        // Validar el correo electrónico
         const existingCategory = await this.prismaService.category.findFirst({
           where: {
-            name,
+            name: createCategoryDto.name,
           }
         });
   
@@ -21,14 +21,8 @@ export class CategoriesService {
           throw new ConflictException('El categoría con ese nombre ya está en uso');
         }
   
-        const data = { ...(createCategoryDto as any) };
-        if (data.nombre !== undefined) {
-          data.name = data.nombre;
-          delete data.nombre;
-        }
-
         return await this.prismaService.category.create({
-          data,
+          data: createCategoryDto
         })
       } catch (error) {
         console.log(error);
@@ -36,7 +30,7 @@ export class CategoriesService {
       }
     }
   
-    async findAll() {
+    async findAll(paginationDto: PaginationDto) {
       try {
         return await this.prismaService.category.findMany({
           orderBy: {
@@ -70,12 +64,10 @@ export class CategoriesService {
           throw new NotFoundException('Categoría no encontrada');
         }
   
-        // Normalizar nombre (soporta 'name' o 'nombre')
-        const name = (updateCategoryDto as any).name ?? (updateCategoryDto as any).nombre;
-
+        // Validar el correo electrónico
         const existingCategory = await this.prismaService.category.findFirst({
           where: {
-            name,
+            name: updateCategoryDto.name,
           }
         });
   
@@ -83,17 +75,13 @@ export class CategoriesService {
           throw new ConflictException('El nombre de la categoría ya está en uso');
         }
   
-        const data = { ...(updateCategoryDto as any) };
-        if (data.nombre !== undefined) {
-          data.name = data.nombre;
-          delete data.nombre;
-        }
-
         return await this.prismaService.category.update({
           where: {
             id,
           },
-          data,
+          data: {
+            ...updateCategoryDto,
+          }
         })
       } catch (error) {
         console.log(error);

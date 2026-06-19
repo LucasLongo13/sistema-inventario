@@ -10,6 +10,14 @@ import node from '@astrojs/node';
 // https://astro.build/config
 export default defineConfig({
   output: 'server',
+  devToolbar: {
+    enabled: false,
+  },
+  
+  server: {
+    port: 4321,
+    host: true,
+  },
   integrations: [svelte()],
   vite: {
     plugins: [tailwindcss()]

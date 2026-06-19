@@ -1,54 +1,137 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMovementDto } from './dto/create-movement.dto';
 import { UpdateMovementDto } from './dto/update-movement.dto';
+import { PrismaService } from '../prisma/prisma.service';
+import { MovementType } from '@generated';
 
 @Injectable()
 export class MovementsService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(private prismaService: PrismaService) { }
 
   async create(createMovementDto: CreateMovementDto) {
-    return this.prismaService.movement.create({
-      data: createMovementDto,
-    });
+    try {
+
+      // Validar si hay stock suficiente
+      const product = await this.prismaService.product.findUnique({
+        where: {
+          id: createMovementDto.productId,
+        }
+      });
+
+      if (!product) {
+        throw new NotFoundException('Producto no encontrado');
+      }
+
+      if (product.stock < createMovementDto.amount && createMovementDto.type === MovementType.OUT) {
+        throw new BadRequestException('No hay stock suficiente');
+      }
+
+
+       const transaction = await this.prismaService.$transaction(async (tx) => {
+
+        const newMovement = await tx.movement.create({
+          data: {
+            ...createMovementDto,
+            date: new Date(createMovementDto.date),
+          }
+        })
+
+        const newStock = createMovementDto.type === MovementType.IN ? product.stock + createMovementDto.amount : product.stock - createMovementDto.amount;
+
+        await tx.product.update({
+          where: {
+            id: createMovementDto.productId,
+          },
+          data: {
+            stock: newStock,
+          }
+        })
+
+        return newMovement;
+      })
+
+      return transaction;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
 
   async findAll() {
-    return this.prismaService.movement.findMany({
-      orderBy: {
-        date: 'desc',
-      },
-    });
+    try {
+      return await this.prismaService.movement.findMany();
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
 
   async findOne(id: number) {
-    return this.prismaService.movement.findUnique({
-      where: {
-        id,
-      },
-    });
+    try {
+      return await this.prismaService.movement.findUnique({
+        where: {
+          id,
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
 
   async update(id: number, updateMovementDto: UpdateMovementDto) {
-    const existingMovement = await this.findOne(id);
+    const movement = await this.findOne(id);
 
-    if (!existingMovement) {
-      throw new NotFoundException('Movimiento no encontrado');
+    try {
+      if (!movement) {
+        throw new NotFoundException('Movimiento no encontrado');
+      }
+
+      // Validar si hay stock suficiente
+      const product = await this.prismaService.product.findUnique({
+        where: {
+          id: updateMovementDto.productId,
+        }
+      });
+
+      if (!product) {
+        throw new NotFoundException('Producto no encontrado');
+      }
+
+      if (!updateMovementDto.amount) {
+        throw new Error('La cantidad es obligatoria');
+      }
+
+      if (product.stock < updateMovementDto.amount && updateMovementDto.type === MovementType.OUT) {
+        throw new Error('No hay stock suficiente');
+      }
+
+      return await this.prismaService.movement.update({
+        where: {
+          id,
+        },
+        data: {
+          ...updateMovementDto,
+          date: new Date(updateMovementDto.date!),
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      throw error;
     }
-
-    return this.prismaService.movement.update({
-      where: {
-        id,
-      },
-      data: updateMovementDto,
-    });
   }
 
   async remove(id: number) {
-    return this.prismaService.movement.delete({
-      where: {
-        id,
-      },
-    });
+    try {
+      return await this.prismaService.movement.delete({
+        where: {
+          id,
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
+
 }

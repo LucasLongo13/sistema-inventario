@@ -1,32 +1,106 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateProductDto } from './create-product.dto';
-import { UpdateProductDto } from './update-product.dto';
 
 @Injectable()
 export class ProductsService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) { }
 
   async create(createProductDto: CreateProductDto) {
-    return this.prismaService.product.create({ data: createProductDto });
+    try {
+      // Validar el correo electrónico
+      const existingProduct = await this.prismaService.product.findFirst({
+        where: {
+          name: createProductDto.name,
+        }
+      });
+
+      if (existingProduct) {
+        throw new ConflictException('El producto con ese nombre ya está en uso');
+      }
+
+      return await this.prismaService.product.create({
+        data: createProductDto
+      })
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
 
   async findAll() {
-    return this.prismaService.product.findMany({ orderBy: { name: 'asc' } });
+    try {
+      return await this.prismaService.product.findMany({
+        orderBy: {
+          name: 'asc',
+        },
+        include: {
+          category: true,
+        }
+      });
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
 
   async findOne(id: number) {
-    return this.prismaService.product.findUnique({ where: { id } });
+    try {
+      return await this.prismaService.product.findUnique({
+        where: {
+          id,
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
 
   async update(id: number, updateProductDto: UpdateProductDto) {
-    const existing = await this.findOne(id);
-    if (!existing) throw new NotFoundException('Producto no encontrado');
+    const product = await this.findOne(id);
 
-    return this.prismaService.product.update({ where: { id }, data: updateProductDto });
+    try {
+      if (!product) {
+        throw new NotFoundException('Producto no encontrado');
+      }
+
+      // Validar el correo electrónico
+      const existingProduct = await this.prismaService.product.findFirst({
+        where: {
+          name: updateProductDto.name,
+        }
+      });
+
+      if (existingProduct && existingProduct.id !== id) {
+        throw new ConflictException('El nombre del producto ya está en uso');
+      }
+
+      return await this.prismaService.product.update({
+        where: {
+          id,
+        },
+        data: {
+          ...updateProductDto,
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
 
   async remove(id: number) {
-    return this.prismaService.product.delete({ where: { id } });
+    try {
+      return await this.prismaService.product.delete({
+        where: {
+          id,
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
 }

@@ -14,8 +14,8 @@ enum Role {
 }
 
 enum MovementType {
-  INGRESO
-  EGRESO
+  IN
+  OUT
 }
 
 model User {
@@ -25,10 +25,10 @@ model User {
   password String @db.Text()
   role Role @default(USER)
 
-  movements Movement[]
-
   createdAt DateTime @default(now()) @db.Timestamptz(3)
   updatedAt DateTime @updatedAt @db.Timestamptz(3)
+
+  movements Movement[]
 
   @@index([id])
   @@index([email])
@@ -66,18 +66,30 @@ model Product {
   @@map("products")
 }
 
+model Provider {
+  id Int @id @default(autoincrement())
+  name String @db.VarChar(255)
+
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+
+  @@index([id])
+  @@map("providers")
+}
+
 model Movement {
   id Int @id @default(autoincrement())
-  type MovementType
-  date DateTime
-  amount Int
-  priceUnit Decimal @db.Decimal(10, 2)
 
-  userId Int
-  user User @relation(fields: [userId], references: [id])
+  type MovementType @default(IN)
+  date DateTime @default(now()) @db.Timestamptz(3)
+  amount Int @default(0)
+  priceUnit Decimal @db.Decimal(10, 2)
 
   productId Int
   product Product @relation(fields: [productId], references: [id])
+
+  userId Int
+  user User @relation(fields: [userId], references: [id])
 
   createdAt DateTime @default(now()) @db.Timestamptz(3)
   updatedAt DateTime @updatedAt @db.Timestamptz(3)
@@ -85,3 +97,6 @@ model Movement {
   @@index([id])
   @@map("movements")
 }
+
+/* Ventas */
+/* Compras */

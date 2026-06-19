@@ -1,15 +1,10 @@
 <script lang="ts">
-    import { productModel } from "../products/products.svelte";
+    import { productModel } from "@components/products/product.svelte";
     import { userModel } from "@components/users/user.svelte";
-    import { onMount } from "svelte";
+    import { MovementType, MovementTypeOptions } from "./movement.svelte";
 
     let { movementModel } = $props();
     let id = $props.id();
-
-    onMount(async () => {
-        await productModel.getProducts();
-        await userModel.getUsers();
-    });
 </script>
 
 {#if movementModel.editDialog}
@@ -17,7 +12,7 @@
         class="w-full text-black h-full fixed top-0 left-0 flex flex-col items-center bg-transparent justify-center backdrop-blur-xl"
     >
         <div class="bg-white rounded-md p-4 w-auto">
-            <form onsubmit={(e) => movementModel.editMovement(e)}>
+            <form onsubmit={(e) => movementModel.editMovement(movementModel.movement?.id, e)}>
                 <h2 class="text-lg font-bold">Editar Movimiento</h2>
                 <hr />
 
@@ -32,7 +27,9 @@
                             type="date"
                             id={`date-${id}`}
                             name="date"
-                            value={movementModel.movement.date}
+                            value={movementModel.formatDateToInput(
+                                movementModel.movement?.date,
+                            )}
                         />
                     </div>
                     <div class="p-2 flex flex-col">
@@ -43,10 +40,11 @@
                             class="border border-gray-400 rounded-md p-2"
                             id={`type-${id}`}
                             name="type"
-                            value={movementModel.movement.type}
+                            value={movementModel.movement?.type}
                         >
-                            <option value="INGRESO">Ingreso</option>
-                            <option value="EGRESO">Egreso</option>
+                            {#each MovementTypeOptions as option}
+                                <option value={option.value}>{option.label}</option>
+                            {/each}
                         </select>
                     </div>
                     <div class="p-2 flex flex-col">

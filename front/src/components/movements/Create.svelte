@@ -1,15 +1,11 @@
 <script lang="ts">
-    import { productModel } from "../products/products.svelte";
-    import { userModel } from "../users/user.svelte";
-    import { onMount } from "svelte";
+    import { productModel } from "@components/products/product.svelte";
+    import { userModel } from "@components/users/user.svelte";
+    import { MovementType, MovementTypeOptions } from "./movement.svelte";
 
     let { movementModel } = $props();
     let id = $props.id();
-
-    onMount(async () => {
-        await productModel.getProducts();
-        await userModel.getUsers();
-    });
+    let now = new Date();
 </script>
 
 {#if movementModel.createDialog}
@@ -32,6 +28,7 @@
                             type="date"
                             id={`date-${id}`}
                             name="date"
+                            value={movementModel.formatDateToInput(now.toISOString())}
                         />
                     </div>
                     <div class="p-2 flex flex-col">
@@ -43,8 +40,10 @@
                             id={`type-${id}`}
                             name="type"
                         >
-                            <option value="INGRESO">Ingreso</option>
-                            <option value="EGRESO">Egreso</option>
+                            <option value="">Seleccione un tipo</option>
+                            {#each MovementTypeOptions as option}
+                                <option value={option.value}>{option.label}</option>
+                            {/each}
                         </select>
                     </div>
                     <div class="p-2 flex flex-col">

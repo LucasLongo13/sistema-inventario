@@ -8,9 +8,15 @@
         class="w-full text-black h-full fixed top-0 left-0 flex flex-col items-center bg-transparent justify-center backdrop-blur-xl"
     >
         <div class="bg-white rounded-md p-4 w-96">
-            <form on:submit={(e) => userModel.createUser(e)}>
+            <form onsubmit={(e) => userModel.createUser(e)}>
                 <h2 class="text-lg font-bold">Crear Usuario</h2>
                 <hr />
+                
+                {#if userModel.errorMessage}
+                    <div class="p-2 flex justify-center text-red-500">
+                        {userModel.errorMessage}
+                    </div>
+                {/if}
 
                 <div class="p-2 flex flex-col">
                     <label for="fullName" class="block text-sm font-bold"
@@ -24,7 +30,6 @@
                         name="fullName"
                     />
                 </div>
-
                 <div class="p-2 flex flex-col">
                     <label for="email" class="block text-sm font-bold"
                         >Correo Electronico:</label
@@ -37,7 +42,6 @@
                         name="email"
                     />
                 </div>
-
                 <div class="p-2 flex flex-col">
                     <label for="password" class="block text-sm font-bold"
                         >Contraseña:</label
@@ -54,12 +58,10 @@
                 <div class="p-2 flex justify-end gap-2 mt-3">
                     <button
                         class="bg-red-400 text-white px-4 py-2 rounded-md"
-                        type="button"
-                        on:click={() => (userModel.createDialog = false)}
+                        onclick={() => (userModel.createDialog = false)}
                     >
                         Cancelar
                     </button>
-
                     <button
                         class="bg-blue-400 text-white px-4 py-2 rounded-md"
                         type="submit"

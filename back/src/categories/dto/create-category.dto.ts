@@ -1,7 +1,8 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsString, Length } from "class-validator";
 
 export class CreateCategoryDto {
-  @IsString()
-  @IsNotEmpty()
-  name!: string;
+
+    @IsString()
+    @Length(3, 50, { message: 'El nombre debe tener entre 3 y 50 caracteres' })
+    name!: string;
 }
