@@ -1,6 +1,6 @@
 import { MovementType } from "@generated";
 import { Type } from "class-transformer";
-import { IsDateString, IsEnum, IsInt, IsNotEmpty, IsNumber, Min } from "class-validator";
+import { IsDateString, IsEnum, IsInt, IsNotEmpty, IsPositive, Min } from "class-validator";
 
 export class CreateMovementDto {
     @IsEnum(MovementType, { message: 'El tipo de movimiento no es válido' })
@@ -10,22 +10,23 @@ export class CreateMovementDto {
     date!: string;
 
     @Type(() => Number)
-    @IsInt({ message: 'El cantidad no es válida' })
-    @Min(0, { message: 'El cantidad no puede ser negativo' })
+    @IsPositive({ message: 'El cantidad debe ser un número entero positivo o cero' })
     amount!: number;
 
     @IsNotEmpty({ message: 'El precio unitario es obligatorio' })
     @Type(() => Number)
-    @IsNumber()
+    @IsPositive({ message: 'El precio unitario debe ser un número entero positivo o cero' })
     priceUnit!: number;
 
     @IsNotEmpty({ message: 'El producto es obligatorio' })
     @Type(() => Number)
-    @IsNumber()
+    @IsInt({ message: 'El ID del producto no es válido' })
+    @Min(0, { message: 'El ID del producto no puede ser negativo' })
     productId!: number;
 
     @IsNotEmpty({ message: 'El usuario es obligatorio' })
     @Type(() => Number)
-    @IsNumber()
+    @IsInt({ message: 'El ID del usuario no es válido' })
+    @Min(0, { message: 'El ID del usuario no puede ser negativo' })
     userId!: number;
 }

@@ -59,7 +59,29 @@ export class MovementsService {
 
   async findAll() {
     try {
-      return await this.prismaService.movement.findMany();
+      return await this.prismaService.movement.findMany(
+        {
+          select: {
+            id: true,
+            date: true,
+            amount: true,
+            priceUnit: true,
+            type: true,
+            user: {
+              select: {
+                id: true,
+                fullName: true,
+              }
+            },
+            product: {
+              select: {
+                id: true,
+                name: true,
+              }
+            }
+          }
+        }
+      );
     } catch (error) {
       console.log(error);
       throw error;

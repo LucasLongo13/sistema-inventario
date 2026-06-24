@@ -21,19 +21,27 @@ class UserModel {
     }
 
     async deleteUser(id: number) {
-        await http.delete<User>(`${import.meta.env.PUBLIC_API_URL}/users/${id}`);
-        this.getUsers();
-        this.deleteDialog = false;
+        try {
+            await http.delete<User>(`${import.meta.env.PUBLIC_API_URL}/users/${id}`);
+            this.getUsers();
+            this.deleteDialog = false;
+        } catch (error) {
+            handleErrorToast(error);
+        }
     }
 
     async editUser(id: number, e: Event) {
-        e.preventDefault();
+        try {
+            e.preventDefault();
         const formData = new FormData(e.target as HTMLFormElement);
         const data = Object.fromEntries(formData);
 
         await http.patch<User>(`${import.meta.env.PUBLIC_API_URL}/users/${id}`, data);
         this.getUsers();
         this.editDialog = false;
+        } catch (error) {
+            handleErrorToast(error);
+        }
     }
 
     async createUser(e: Event) {

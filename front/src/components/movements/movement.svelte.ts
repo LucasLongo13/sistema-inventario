@@ -1,5 +1,6 @@
 import type { Category } from "@components/categories/category.svelte"
 import { http } from "@core/http"
+import { handleErrorToast } from "@core/utils/toast"
 
 export enum MovementType {
     IN = "IN",
@@ -18,7 +19,14 @@ export interface Movement {
     amount: number
     priceUnit: number
     productId: number
-    userId: number
+    user: {
+        id: number
+        fullName: string
+    }
+    product: {
+        id: number
+        name: string
+    }
 }
 
 class MovementModel {
@@ -33,28 +41,40 @@ class MovementModel {
     }
 
     async deleteMovement(id: number) {
-        await http.delete<Movement>(`${import.meta.env.PUBLIC_API_URL}/movements/${id}`);
-        this.getMovements();
-        this.deleteDialog = false;
+        try {
+            await http.delete<Movement>(`${import.meta.env.PUBLIC_API_URL}/movements/${id}`);
+            this.getMovements();
+            this.deleteDialog = false;
+        } catch (error) {
+            handleErrorToast(error);
+        }
     }
 
     async editMovement(id: number, e: Event) {
-        e.preventDefault();
-        const formData = new FormData(e.target as HTMLFormElement);
-        const data = Object.fromEntries(formData);
+        try {
+            e.preventDefault();
+            const formData = new FormData(e.target as HTMLFormElement);
+            const data = Object.fromEntries(formData);
 
-        await http.patch<Category>(`${import.meta.env.PUBLIC_API_URL}/movements/${id}`, data);
-        this.getMovements();
-        this.editDialog = false;
+            await http.patch<Movement>(`${import.meta.env.PUBLIC_API_URL}/movements/${id}`, data);
+            this.getMovements();
+            this.editDialog = false;
+        } catch (error) {
+            handleErrorToast(error);
+        }
     }
 
     async createMovement(e: Event) {
-        e.preventDefault();
-        const formData = new FormData(e.target as HTMLFormElement);
-        const data = Object.fromEntries(formData);
-        await http.post<Movement>(`${import.meta.env.PUBLIC_API_URL}/movements`, data);
-        this.getMovements();
-        this.createDialog = false;
+        try {
+            e.preventDefault();
+            const formData = new FormData(e.target as HTMLFormElement);
+            const data = Object.fromEntries(formData);
+            await http.post<Movement>(`${import.meta.env.PUBLIC_API_URL}/movements`, data);
+            this.getMovements();
+            this.createDialog = false;
+        } catch (error) {
+            handleErrorToast(error);
+        }
     }
 
     showCreateModal() {

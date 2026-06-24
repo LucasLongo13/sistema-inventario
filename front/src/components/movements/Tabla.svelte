@@ -28,6 +28,7 @@
     <thead>
         <tr>
             <th class="bg-gray-800 text-white text-left p-2">ID</th>
+            <th class="bg-gray-800 text-white text-left p-2">Nombre del Producto</th>
             <th class="bg-gray-800 text-white text-left p-2">Fecha</th>
             <th class="bg-gray-800 text-white text-left p-2">Tipo</th>
             <th class="bg-gray-800 text-white text-left p-2">Monto</th>
@@ -39,6 +40,7 @@
         {#each movementModel.movements as movement}
             <tr class="odd:bg-gray-100 dark:odd:bg-gray-700">
                 <td class="px-2 py-1">#{movement.id}</td>
+                <td class="px-2 py-1">{movement.product.name}</td>
                 <td class="px-2 py-1">{movementModel.formatDate(movement.date)}</td>
                 <td class="px-2 py-1">{MovementTypeOptions.find(option => option.value === movement.type)?.label}</td>
                 <td class="px-2 py-1">{movement.amount}</td>

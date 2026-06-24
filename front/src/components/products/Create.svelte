@@ -2,6 +2,7 @@
     import { categoryModel } from "@components/categories/category.svelte";
     
     let { productModel } = $props();
+    let stock = $state(null);
     let id = $props.id();
 </script>
 
@@ -32,11 +33,12 @@
                         >Stock:</label
                     >
                     <input
-                        class="border border-gray-400 rounded-md p-2"
-                        placeholder="Ingrese el stock"
+                        class="border border-gray-400 rounded-md p-2 placeholder-red-400"
+                        placeholder={stock ? stock : 'Sin stock'}
                         type="text"
                         id={`stock-${id}`}
                         name="stock"
+                        bind:value={stock}
                     />
                 </div>
 

@@ -4,6 +4,7 @@
     import Create from "./Create.svelte";
     import { categoryModel } from "./category.svelte";
     import { onMount } from "svelte";
+    import Pagination from "@components/common/Pagination.svelte";
 
     onMount(async () => {
         await categoryModel.getCategories();
@@ -30,7 +31,7 @@
     <tbody>
         {#each categoryModel.categories as category}
             <tr class="odd:bg-gray-100 dark:odd:bg-gray-700">
-                <td class="px-2 py-1">{category.name}</td>
+                <td class="px-2 py-1 capitalize">{category.name.toLowerCase()}</td>
                 <td class="px-2 py-1">
                     <div class="flex justify-center gap-2">
                         <button
@@ -53,3 +54,5 @@
         {/each}
     </tbody>
 </table>
+
+<Pagination model={categoryModel} />

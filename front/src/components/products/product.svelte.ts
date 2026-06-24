@@ -1,5 +1,6 @@
 import { type Category } from "@components/categories/category.svelte"
 import { http } from "@core/http"
+import { handleErrorToast } from "@core/utils/toast"
 
 interface Product {
     id: number
@@ -24,28 +25,40 @@ class ProductModel {
     }
 
     async deleteProduct(id: number) {
-        await http.delete<Product>(`${import.meta.env.PUBLIC_API_URL}/products/${id}`);
-        this.getProducts();
-        this.deleteDialog = false;
+        try {
+            await http.delete<Product>(`${import.meta.env.PUBLIC_API_URL}/products/${id}`);
+            this.getProducts();
+            this.deleteDialog = false;
+        } catch (error) {
+            handleErrorToast(error);
+        }
     }
 
     async editProduct(id: number, e: Event) {
-        e.preventDefault();
-        const formData = new FormData(e.target as HTMLFormElement);
-        const data = Object.fromEntries(formData);
+        try {
+            e.preventDefault();
+            const formData = new FormData(e.target as HTMLFormElement);
+            const data = Object.fromEntries(formData);
 
-        await http.patch<Product>(`${import.meta.env.PUBLIC_API_URL}/products/${id}`, data);
-        this.getProducts();
-        this.editDialog = false;
+            await http.patch<Product>(`${import.meta.env.PUBLIC_API_URL}/products/${id}`, data);
+            this.getProducts();
+            this.editDialog = false;
+        } catch (error) {
+            handleErrorToast(error);
+        }
     }
 
     async createProduct(e: Event) {
-        e.preventDefault();
-        const formData = new FormData(e.target as HTMLFormElement);
-        const data = Object.fromEntries(formData);
-        await http.post<Product>(`${import.meta.env.PUBLIC_API_URL}/products`, data);
-        this.getProducts();
-        this.createDialog = false;
+        try {
+            e.preventDefault();
+            const formData = new FormData(e.target as HTMLFormElement);
+            const data = Object.fromEntries(formData);
+            await http.post<Product>(`${import.meta.env.PUBLIC_API_URL}/products`, data);
+            this.getProducts();
+            this.createDialog = false;
+        } catch (error) {
+            handleErrorToast(error);
+        }
     }
 
     showCreateModal() {

@@ -1,4 +1,5 @@
 import { http } from "@core/http"
+import { handleErrorToast } from "@core/utils/toast"
 
 interface Provider {
     id: number
@@ -17,28 +18,40 @@ class ProviderModel {
     }
 
     async deleteProvider(id: number) {
-        await http.delete<Provider>(`${import.meta.env.PUBLIC_API_URL}/providers/${id}`);
-        this.getProviders();
-        this.deleteDialog = false;
+        try {
+            await http.delete<Provider>(`${import.meta.env.PUBLIC_API_URL}/providers/${id}`);
+            this.getProviders();
+            this.deleteDialog = false;
+        } catch (error) {
+            handleErrorToast(error);
+        }
     }
 
     async editProvider(id: number, e: Event) {
-        e.preventDefault();
-        const formData = new FormData(e.target as HTMLFormElement);
-        const data = Object.fromEntries(formData);
+        try {
+            e.preventDefault();
+            const formData = new FormData(e.target as HTMLFormElement);
+            const data = Object.fromEntries(formData);
 
-        await http.patch<Provider>(`${import.meta.env.PUBLIC_API_URL}/providers/${id}`, data);
-        this.getProviders();
-        this.editDialog = false;
+            await http.patch<Provider>(`${import.meta.env.PUBLIC_API_URL}/providers/${id}`, data);
+            this.getProviders();
+            this.editDialog = false;
+        } catch (error) {
+            handleErrorToast(error);
+        }
     }
 
     async createProvider(e: Event) {
-        e.preventDefault();
-        const formData = new FormData(e.target as HTMLFormElement);
-        const data = Object.fromEntries(formData);
-        await http.post<Provider>(`${import.meta.env.PUBLIC_API_URL}/providers`, data);
-        this.getProviders();
-        this.createDialog = false;
+        try {
+            e.preventDefault();
+            const formData = new FormData(e.target as HTMLFormElement);
+            const data = Object.fromEntries(formData);
+            await http.post<Provider>(`${import.meta.env.PUBLIC_API_URL}/providers`, data);
+            this.getProviders();
+            this.createDialog = false;
+        } catch (error) {
+            handleErrorToast(error);
+        }
     }
 
     showCreateModal() {
